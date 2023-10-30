@@ -15,11 +15,13 @@ use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 class ProductController extends Controller
 {
     use APIResponse;
-    public function index(){
+    public function index(): Response
+    {
         return $this->successResponse(Product::all());
     }
 
-    public function store(Request $request){
+    public function store(Request $request): Response
+    {
         $request->validate([
             'name' => 'required',
             'file' => 'required',
@@ -39,11 +41,13 @@ class ProductController extends Controller
         return $product;
     }
 
-    public function showProduct($product_id){
+    public function showProduct($product_id): Response
+    {
         return $this->successResponse($this->show($product_id));
     }
 
-    public function update(Request $request, $product_id){
+    public function update(Request $request, $product_id): Response|\Illuminate\Http\JsonResponse
+    {
         $request->validate([
             'price' => 'numeric',
         ]);
@@ -61,7 +65,8 @@ class ProductController extends Controller
         return $this->successResponse($product);
     }
 
-    public function destroy($product_id){
+    public function destroy($product_id): Response|\Illuminate\Http\JsonResponse
+    {
         $product = DB::table('products')->where('id', $product_id);
         if(empty($product->first())){
             return $this->errorResponse('Product Not Found', ResponseAlias::HTTP_NOT_FOUND);
@@ -73,7 +78,8 @@ class ProductController extends Controller
 
     }
 
-    public function filterProducts($page_number, $per_page){
+    public function filterProducts($page_number, $per_page): Response
+    {
         $sort = \request()->get('sort');
         $order = \request()->get('order');
         if(!empty($sort) && in_array($sort, ['price', 'created_at'])){
@@ -87,7 +93,7 @@ class ProductController extends Controller
 
     }
 
-    public function generateSlug($name)
+    public function generateSlug($name): array|string|null
     {
         $slug=Str::slug($name);
         if (Product::where('slug',Str::slug($name))->exists()) {

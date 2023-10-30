@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\OrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,6 +35,18 @@ Route::group(['middleware' => 'auth:sanctum','prefix' => '/v1'], function () {
     Route::patch('/products/{product_id}', [ProductController::class, 'update']);
     Route::delete('/products/{product_id}', [ProductController::class, 'destroy']);
     Route::get('/products/filter/{page_number}/{per_page}', [ProductController::class, 'filterProducts']);
+
+
+    /**
+     *
+     * Orders Route
+     */
+    Route::get('/orders', [OrderController::class, 'index']);
+    Route::post('/orders', [OrderController::class, 'store']);
+    Route::get('/orders/{order_id}', [OrderController::class, 'showOrder']);
+    Route::get('/orders/filter/{page_number}/{per_page}', [OrderController::class, 'filterOrders']);
+    Route::delete('/orders/{order_id}', [OrderController::class, 'destroy']);
+
 });
 
 

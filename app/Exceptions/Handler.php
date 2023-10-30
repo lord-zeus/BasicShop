@@ -8,9 +8,12 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Validation\ValidationException;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Throwable;
+use Illuminate\Http\Response;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 
 class Handler extends ExceptionHandler
 {
@@ -34,7 +37,7 @@ class Handler extends ExceptionHandler
         //
     }
 
-    public function render($request, Throwable $exception)
+    public function render($request, Throwable $exception): Response|JsonResponse|RedirectResponse
     {
         if($exception instanceof HttpException){
             $code = $exception->getStatusCode();
@@ -69,7 +72,7 @@ class Handler extends ExceptionHandler
             return parent::render($request, $exception);
         }
 
-        return  $this->errorResponse('UnExpected Error Auth Micro Service. Try again Later', Response::HTTP_INTERNAL_SERVER_ERROR);
+        return  $this->errorResponse('UnExpected Error Auth Micro Service. Try again Later', ResponseAlias::HTTP_INTERNAL_SERVER_ERROR);
     }
 
 }
