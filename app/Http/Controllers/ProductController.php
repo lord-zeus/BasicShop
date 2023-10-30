@@ -20,15 +20,13 @@ class ProductController extends Controller
         $request->validate([
             'name' => 'required',
             'image' => 'required',
-            'price' => 'required|int',
+            'price' => 'required|numeric',
             'sku' => 'required',
         ]);
         $slug = $this->generateSlug($request->name);
-        $request = $request->merge(['slug', $slug]);
+        $request = $request->merge(['slug' => $slug]);
         $product = Product::create($request->all());
         return $this->successResponse($product, ResponseAlias::HTTP_CREATED);
-
-
     }
 
     public function generateSlug($name)
