@@ -29,6 +29,10 @@ class ProductController extends Controller
         return $this->successResponse($product, ResponseAlias::HTTP_CREATED);
     }
 
+    public function show($product_id){
+        return Product::findOrFail($product_id);
+    }
+
     public function generateSlug($name)
     {
         $slug=Str::slug($name);

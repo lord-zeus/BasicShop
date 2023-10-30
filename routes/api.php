@@ -29,6 +29,7 @@ Route::group(['middleware' => 'auth:sanctum','prefix' => '/v1'], function () {
      */
     Route::get('/products', [ProductController::class, 'index']);
     Route::post('/products', [ProductController::class, 'store']);
+    Route::get('/products/{product_id}', [ProductController::class, 'show']);
 });
 
 
