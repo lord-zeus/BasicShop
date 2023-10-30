@@ -6,6 +6,8 @@ use App\Models\Product;
 use App\Traits\APIResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
@@ -25,7 +27,7 @@ class ProductController extends Controller
             'sku' => 'required',
         ]);
         $path = $request->file('file')->store('images', 'public');
-        $image_path = "/storage/$path";
+        $image_path = "public/$path";
         $slug = $this->generateSlug($request->name);
         $request->merge(['slug' => $slug, 'image' => $image_path]);
         $product = Product::create($request->except(['file']));
@@ -48,7 +50,7 @@ class ProductController extends Controller
         $product = $this->show($product_id);
         if($request->file){
             $path = $request->file('file')->store('images', 'public');
-            $image_path = "/storage/$path";
+            $image_path = "public/$path";
             $request->merge(['image' => $image_path]);
         }
         $product->fill($request->except(['file']));
@@ -60,9 +62,15 @@ class ProductController extends Controller
     }
 
     public function destroy($product_id){
-        $product = $this->show($product_id);
+        $product = DB::table('products')->where('id', $product_id);
+        if(empty($product->first())){
+            return $this->errorResponse('Product Not Found', ResponseAlias::HTTP_NOT_FOUND);
+        }
+        $image = $product->first()->image;
         $product->delete();
-        return $this->successResponse($product);
+        Storage::delete($image);
+        return $this->successResponse("Product Deleted");
+
     }
 
     public function filterProducts($page_number, $per_page){

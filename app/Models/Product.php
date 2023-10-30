@@ -14,7 +14,7 @@ class Product extends Model
 
 
 
-//    public function getImageAttribute($image){
-//        return Storage::url($image);
-//    }
+    public function getImageAttribute($image){
+        return Storage::url($image);
+    }
 }
