@@ -3,8 +3,12 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Order;
+use App\Models\OrderProduct;
+use App\Models\Product;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Log;
 
 class DatabaseSeeder extends Seeder
 {
@@ -13,7 +17,13 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::factory()->create();
+        $admin = User::where('name', 'admin')->first();
+        if(empty($admin)){
+            User::factory()->create();
+        }
+        Product::factory(100)->create();
+        OrderProduct::factory(100)->create();
+        Order::factory(100)->create();
 
     }
 }
