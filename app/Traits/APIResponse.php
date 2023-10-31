@@ -5,6 +5,7 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
+use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
 trait APIResponse {
     /**
@@ -12,7 +13,7 @@ trait APIResponse {
      * @param int $code
      * @return Response
      */
-    public function successResponse($data, int $code = Response::HTTP_OK): Response
+    public function successResponse($data, int $code = ResponseAlias::HTTP_OK): Response
     {
         return response(['data' => $data, 'code' => $code])->header('Content-Type', 'application/json');
     }
