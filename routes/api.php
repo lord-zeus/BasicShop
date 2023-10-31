@@ -1,10 +1,10 @@
 <?php
 
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ProductController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\OrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,17 +21,14 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-
 Route::group(['prefix' => '/v1'], function () {
     Route::post('/login', [AuthController::class, 'login']);
     Route::get('/products/filter/{page_number}/{per_page}', [ProductController::class, 'filterProducts']);
     Route::post('/orders', [OrderController::class, 'store']);
 });
 
-
-Route::group(['middleware' => 'auth:sanctum','prefix' => '/v1'], function () {
+Route::group(['middleware' => 'auth:sanctum', 'prefix' => '/v1'], function () {
     /**
-     *
      * Product Routes
      */
     Route::get('/products', [ProductController::class, 'index']);
@@ -41,9 +38,7 @@ Route::group(['middleware' => 'auth:sanctum','prefix' => '/v1'], function () {
     Route::patch('/products/{product_id}', [ProductController::class, 'update']);
     Route::delete('/products/{product_id}', [ProductController::class, 'destroy']);
 
-
     /**
-     *
      * Orders Route
      */
     Route::get('/orders', [OrderController::class, 'index']);
@@ -52,5 +47,3 @@ Route::group(['middleware' => 'auth:sanctum','prefix' => '/v1'], function () {
     Route::delete('/orders/{order_id}', [OrderController::class, 'destroy']);
 
 });
-
-

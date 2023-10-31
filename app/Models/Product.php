@@ -18,10 +18,12 @@ class Product extends Model
     {
         return $this->belongsToMany(Order::class);
     }
+
     public function orderProducts(): HasMany
     {
         return $this->hasMany(OrderProduct::class);
     }
+
     public function getImageAttribute($image): string
     {
         return Storage::url($image);

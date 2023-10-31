@@ -8,7 +8,6 @@ use App\Models\OrderProduct;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Log;
 
 class DatabaseSeeder extends Seeder
 {
@@ -18,7 +17,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $admin = User::where('name', 'admin')->first();
-        if(empty($admin)){
+        if (empty($admin)) {
             User::factory()->create();
         }
         Product::factory(100)->create();

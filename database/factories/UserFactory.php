@@ -18,7 +18,7 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => "admin",
+            'name' => 'admin',
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => '$2y$10$wnMQ/M7Gz6qgmuzrJ0RJFOX5tkU4EXbOvpNZMJF7JArWkQyQXCSXC', // admin

@@ -22,7 +22,7 @@ class ProductFactory extends Factory
             'slug' => fake()->unique()->name,
             'sku' => Str::slug(fake()->unique()->text),
             'price' => fake()->numberBetween(100, 10000),
-            'image' => '/public/images/ZGo6ia20WYlUEAQ0GSbV8G3nO3tcADPUOcb2g907.png'
+            'image' => '/public/images/ZGo6ia20WYlUEAQ0GSbV8G3nO3tcADPUOcb2g907.png',
         ];
     }
 }

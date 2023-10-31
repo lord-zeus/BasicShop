@@ -7,17 +7,18 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Throwable;
-use Illuminate\Http\Response;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\RedirectResponse;
 
 class Handler extends ExceptionHandler
 {
     use APIResponse;
+
     /**
      * The list of the inputs that are never flashed to the session on validation exceptions.
      *
@@ -39,40 +40,43 @@ class Handler extends ExceptionHandler
 
     public function render($request, Throwable $exception): Response|JsonResponse|RedirectResponse
     {
-        if($exception instanceof HttpException){
+        if ($exception instanceof HttpException) {
             $code = $exception->getStatusCode();
             $check_message = $exception->getMessage();
-            if(!empty($check_message)){
+            if (! empty($check_message)) {
                 $message = $exception->getMessage();
+
                 return $this->errorMessage($message, $code);
-            }
-            else
+            } else {
                 $message = Response::$statusTexts[$code];
+            }
+
             return $this->errorResponse($message, $code);
         }
-        if($exception instanceof ModelNotFoundException){
+        if ($exception instanceof ModelNotFoundException) {
             $model = strtolower(class_basename($exception->getModel()));
+
             return $this->errorResponse("Does not Exist Any Instance of {$model} with the given id", Response::HTTP_NOT_FOUND);
         }
 
-        if($exception instanceof AuthorizationException){
+        if ($exception instanceof AuthorizationException) {
             return $this->errorResponse($exception->getMessage(), Response::HTTP_FORBIDDEN);
         }
 
-        if($exception instanceof AuthenticationException){
+        if ($exception instanceof AuthenticationException) {
             return $this->errorResponse($exception->getMessage(), Response::HTTP_UNAUTHORIZED);
         }
 
-        if($exception instanceof ValidationException){
+        if ($exception instanceof ValidationException) {
             $error = $exception->validator->errors()->getMessages();
+
             return $this->errorResponse($error, Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        if(env('APP_DEBUG')){
+        if (env('APP_DEBUG')) {
             return parent::render($request, $exception);
         }
 
-        return  $this->errorResponse('UnExpected Error Auth Micro Service. Try again Later', ResponseAlias::HTTP_INTERNAL_SERVER_ERROR);
+        return $this->errorResponse('UnExpected Error Auth Micro Service. Try again Later', ResponseAlias::HTTP_INTERNAL_SERVER_ERROR);
     }
-
 }
