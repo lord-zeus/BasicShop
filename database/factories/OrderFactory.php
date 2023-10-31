@@ -19,7 +19,7 @@ class OrderFactory extends Factory
         return [
             'phone' => fake()->phoneNumber,
             'amount' => fake()->numberBetween(400, 20000),
-            'comment' => fake()->text
+            'comment' => fake()->text,
         ];
     }
 }

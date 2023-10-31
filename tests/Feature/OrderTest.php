@@ -7,31 +7,28 @@ use App\Models\OrderProduct;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Log;
 use Tests\TestCase;
 
 class OrderTest extends TestCase
 {
     use DatabaseMigrations;
+
     /**
      * test
      */
-
-    public function test_admin_can_view_all_orders():void
+    public function test_admin_can_view_all_orders(): void
     {
         User::factory()->create();
         Order::factory(2)->create();
-        $response = $this->post('/api/v1/login', ['name'=> 'admin', 'password' => 'admin']);
+        $response = $this->post('/api/v1/login', ['name' => 'admin', 'password' => 'admin']);
         $data = $response->getOriginalContent();
         $response_order = $this->withHeaders(['Authorization' => "Bearer $data[data]"])
             ->get('/api/v1/orders');
         $response_order->assertStatus(200);
     }
 
-    public function test_order_can_be_placed_with_the_right_information():void
+    public function test_order_can_be_placed_with_the_right_information(): void
     {
         Product::factory(5)->create();
         $response_order = $this->post('/api/v1/orders', [
@@ -39,16 +36,16 @@ class OrderTest extends TestCase
             'comment' => fake()->text,
             'products' => [
                 ['id' => 1, 'quantity' => 2],
-                ['id' => 2, 'quantity' => 3]
-            ]
+                ['id' => 2, 'quantity' => 3],
+            ],
         ]);
 
         $response_order_f = $this->post('/api/v1/orders', [
             'comment' => fake()->text,
             'products' => [
                 ['id' => 1, 'quantity' => 2],
-                ['id' => 2, 'quantity' => 3]
-            ]
+                ['id' => 2, 'quantity' => 3],
+            ],
         ]);
 
         $response_order->assertStatus(200);
@@ -56,14 +53,14 @@ class OrderTest extends TestCase
 
     }
 
-    public function test_admin_can_view_order_and_order_products():void
+    public function test_admin_can_view_order_and_order_products(): void
     {
         Product::factory(20)->create();
         Order::factory(20)->create();
         OrderProduct::factory(100)->create();
         OrderProduct::factory()->orderId(1)->create();
         User::factory()->create();
-        $response = $this->post('/api/v1/login', ['name'=> 'admin', 'password' => 'admin']);
+        $response = $this->post('/api/v1/login', ['name' => 'admin', 'password' => 'admin']);
         $data = $response->getOriginalContent();
 
         $response = $this->withHeaders(['Authorization' => "Bearer $data[data]"])
@@ -73,12 +70,13 @@ class OrderTest extends TestCase
         $order_products = $values_j['data']['order_products'];
 
         $response->assertStatus(200)
-            ->assertJsonIsArray("data.order_products");
+            ->assertJsonIsArray('data.order_products');
         $this->assertEquals($order_products[0]['order_id'], 1);
 
     }
 
-    public function test_admin_can_filter_orders_by_create_at_and_amount(){
+    public function test_admin_can_filter_orders_by_create_at_and_amount()
+    {
         User::factory()->create();
         Product::factory(20)->create();
         Order::factory()->create();
@@ -87,10 +85,8 @@ class OrderTest extends TestCase
         sleep(2);
         Order::factory()->create();
         OrderProduct::factory(100)->create();
-        $response = $this->post('/api/v1/login', ['name'=> 'admin', 'password' => 'admin']);
+        $response = $this->post('/api/v1/login', ['name' => 'admin', 'password' => 'admin']);
         $data = $response->getOriginalContent();
-
-
 
         $date_response = $this->withHeaders(['Authorization' => "Bearer $data[data]"])
             ->get('/api/v1/orders/filter/1/20?sort=amount');
@@ -103,10 +99,10 @@ class OrderTest extends TestCase
         $orders_j = json_decode($orders, true);
         $third_amount = 0;
         $forth_amount = 0;
-        foreach ($orders_j['data']['data'] as $key => $order){
-            if($key === 0)
+        foreach ($orders_j['data']['data'] as $key => $order) {
+            if ($key === 0) {
                 $third_amount = $order['amount'];
-            else{
+            } else {
                 $forth_amount = $order['amount'];
                 break;
             }
@@ -117,10 +113,10 @@ class OrderTest extends TestCase
         $orders_j = json_decode($orders, true);
         $first_date = 0;
         $second_date = 0;
-        foreach ($orders_j['data']['data'] as $key => $order){
-            if($key === 0)
+        foreach ($orders_j['data']['data'] as $key => $order) {
+            if ($key === 0) {
                 $first_date = Carbon::make($order['created_at']);
-            else{
+            } else {
                 $second_date = Carbon::make($order['created_at']);
                 break;
             }
@@ -131,10 +127,10 @@ class OrderTest extends TestCase
         $orders_j = json_decode($orders, true);
         $third = 0;
         $forth = 0;
-        foreach ($orders_j['data']['data'] as $key => $order){
-            if($key === 0)
+        foreach ($orders_j['data']['data'] as $key => $order) {
+            if ($key === 0) {
                 $third = Carbon::make($order['created_at']);
-            else{
+            } else {
                 $forth = Carbon::make($order['created_at']);
                 break;
             }

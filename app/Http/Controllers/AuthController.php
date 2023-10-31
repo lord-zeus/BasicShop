@@ -7,12 +7,13 @@ use App\Traits\APIResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
     use APIResponse;
-    public function login(Request $request){
+
+    public function login(Request $request)
+    {
         $request->validate([
             'name' => 'required',
             'password' => 'required',

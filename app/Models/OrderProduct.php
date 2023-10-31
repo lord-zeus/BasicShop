@@ -10,7 +10,7 @@ class OrderProduct extends Model
 {
     use HasFactory;
 
-    public $table = "order_product";
+    public $table = 'order_product';
 
     public function product(): BelongsTo
     {
@@ -21,5 +21,4 @@ class OrderProduct extends Model
     {
         return $this->belongsTo(Order::class);
     }
-
 }

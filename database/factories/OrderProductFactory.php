@@ -24,9 +24,10 @@ class OrderProductFactory extends Factory
         ];
     }
 
-    public function orderId($id){
+    public function orderId($id)
+    {
         return $this->state([
-            'order_id' => $id
+            'order_id' => $id,
         ]);
     }
 }
