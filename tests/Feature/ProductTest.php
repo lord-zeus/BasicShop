@@ -8,7 +8,9 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 
@@ -65,9 +67,9 @@ class ProductTest extends TestCase
         User::factory()->create();
         $product = Product::factory()->create();
         $product_object = json_decode($product);
-
         $response = $this->post('/api/v1/login', ['name'=> 'admin', 'password' => 'admin']);
         $data = $response->getOriginalContent();
+
         $response = $this->withHeaders(['Authorization' => "Bearer $data[data]"])
             ->get("/api/v1/products/1");
 
@@ -108,5 +110,94 @@ class ProductTest extends TestCase
 
     }
 
+    public function test_admin_can_delete_product_and_file():void
+    {
+        User::factory()->create();
+        $response = $this->post('/api/v1/login', ['name'=> 'admin', 'password' => 'admin']);
+        $data = $response->getOriginalContent();
+        $response_product = $this->withHeaders(['Authorization' => "Bearer $data[data]"])
+            ->post('/api/v1/products', [
+                'name' => fake()->text,
+                'sku' => Str::slug(fake()->unique()->text),
+                'price' => fake()->numberBetween(100, 10000),
+                'file' => UploadedFile::fake()->image('test.jpg')
 
+            ]);
+        $product_object = $response_product->getOriginalContent();
+        $product = $product_object['data'];
+
+
+        $file_exist_before = Storage::exists(preg_replace("/storage/i", 'public', $product->image));
+        $delete_product = $this->withHeaders(['Authorization' => "Bearer $data[data]"])
+            ->delete("/api/v1/products/$product->id");
+        $file_not_found = Storage::exists(preg_replace("/storage/i", 'public', $product->image));
+        $res_product = $this->withHeaders(['Authorization' => "Bearer $data[data]"])
+            ->get("/api/v1/products/1");
+
+        $this->assertNotEquals($file_exist_before, $file_not_found);
+        $res_product->assertStatus(404);
+        $delete_product->assertStatus(200);
+
+    }
+
+
+    public function test_products_can_be_filtered_by_created_at_and_by_price_then_ordered():void
+    {
+        User::factory()->create();
+        Product::factory()->create();
+        sleep(2);
+        Product::factory(100)->create();
+        sleep(2);
+        Product::factory()->create();
+
+        $date_response = $this->get('/api/v1/products/filter/1/20?sort=price');
+        $products = $date_response->getContent();
+        $first_price = 0;
+        $second_price = 0;
+        $date_response = $this->get('/api/v1/products/filter/1/20?sort=price&order=desc');
+        $products = $date_response->getContent();
+        $products_j = json_decode($products, true);
+        $third_price = 0;
+        $forth_price = 0;
+        foreach ($products_j['data']['data'] as $key => $product){
+            if($key === 0)
+                $third_price = $product['price'];
+            else{
+                $forth_price = $product['price'];
+                break;
+            }
+        }
+        $date_response = $this->get('/api/v1/products/filter/1/20?sort=created_at');
+        $products = $date_response->getContent();
+        $products_j = json_decode($products, true);
+        $first_date = 0;
+        $second_date = 0;
+        foreach ($products_j['data']['data'] as $key => $product){
+            if($key === 0)
+                $first_date = Carbon::make($product['created_at']);
+            else{
+                $second_date = Carbon::make($product['created_at']);
+                break;
+            }
+        }
+        $date_response = $this->get('/api/v1/products/filter/1/20?sort=created_at&order=desc');
+        $products = $date_response->getContent();
+        $products_j = json_decode($products, true);
+        $third = 0;
+        $forth = 0;
+        foreach ($products_j['data']['data'] as $key => $product){
+            if($key === 0)
+                $third = Carbon::make($product['created_at']);
+            else{
+                $forth = Carbon::make($product['created_at']);
+                break;
+            }
+        }
+
+        $this->assertGreaterThanOrEqual($first_price, $second_price);
+        $this->assertLessThanOrEqual($third_price, $forth_price);
+        $this->assertTrue(Carbon::make($first_date)->lt(Carbon::make($second_date)));
+        $this->assertTrue(Carbon::make($third)->gt(Carbon::make($forth)));
+        $date_response->assertStatus(200);
+    }
 }
