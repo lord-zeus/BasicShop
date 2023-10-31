@@ -13,8 +13,10 @@ class AuthTest extends TestCase
 {
 
     use DatabaseMigrations;
+
     /**
-     * A basic feature test example.
+     * @return void
+     *
      */
     public function test_admin_can_login_and_with_correct_credentials(): void
     {
