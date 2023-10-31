@@ -25,7 +25,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::group(['prefix' => '/v1'], function () {
     Route::post('/login', [AuthController::class, 'login']);
     Route::get('/products/filter/{page_number}/{per_page}', [ProductController::class, 'filterProducts']);
-    Route::get('/orders/{order_id}', [OrderController::class, 'showOrder']);
     Route::post('/orders', [OrderController::class, 'store']);
 });
 
@@ -48,6 +47,7 @@ Route::group(['middleware' => 'auth:sanctum','prefix' => '/v1'], function () {
      * Orders Route
      */
     Route::get('/orders', [OrderController::class, 'index']);
+    Route::get('/orders/{order_id}', [OrderController::class, 'showOrder']);
     Route::get('/orders/filter/{page_number}/{per_page}', [OrderController::class, 'filterOrders']);
     Route::delete('/orders/{order_id}', [OrderController::class, 'destroy']);
 

@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
         }
         Product::factory(100)->create();
         OrderProduct::factory(100)->create();
-        Order::factory(100)->create();
+        Order::factory(30)->create();
 
     }
 }
