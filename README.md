@@ -19,6 +19,9 @@ composer install
 # run migrations
 php artisan migrate:fresh --seed
 
+# link Storage
+php artisan storage:link
+
 # Run Application
 php artisan serve
 

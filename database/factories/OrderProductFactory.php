@@ -18,9 +18,15 @@ class OrderProductFactory extends Factory
     {
         return [
             'product_id' => fake()->numberBetween(1, 100),
-            'order_id' => fake()->numberBetween(1, 100),
+            'order_id' => fake()->numberBetween(1, 20),
             'quantity' => fake()->numberBetween(1, 10),
             'amount' => fake()->numberBetween(100, 1000),
         ];
+    }
+
+    public function orderId($id){
+        return $this->state([
+            'order_id' => $id
+        ]);
     }
 }
