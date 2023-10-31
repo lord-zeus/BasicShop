@@ -73,7 +73,40 @@ class ProductTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee(['name' => $product_object->name]);
+    }
+
+    public function test_admin_can_edit_product():void
+    {
+        User::factory()->create();
+        $product = Product::factory()->create();
+        $product_object = json_decode($product);
+        $response = $this->post('/api/v1/login', ['name'=> 'admin', 'password' => 'admin']);
+        $data = $response->getOriginalContent();
+
+        $response_patch = $this->withHeaders(['Authorization' => "Bearer $data[data]"])
+            ->patch("/api/v1/products/$product_object->id", [
+                'sku' => Str::slug(fake()->unique()->text),
+                'price' => fake()->numberBetween(100, 10000),
+
+            ]);
+        $response_put = $this->withHeaders(['Authorization' => "Bearer $data[data]"])
+            ->put("/api/v1/products/$product_object->id", [
+                'name' => fake()->text,
+                'sku' => Str::slug(fake()->unique()->text),
+                'price' => fake()->numberBetween(100, 10000),
+                'file' => UploadedFile::fake()->image('test.jpg')
+
+            ]);
+        //Cleaning left over new image from the PUT reequest
+        $delete_product = $this->withHeaders(['Authorization' => "Bearer $data[data]"])
+            ->delete("/api/v1/products/$product_object->id");
+
+        $response_patch->assertStatus(200);
+        $response_put->assertStatus(200);
+        $delete_product->assertStatus(200);
 
 
     }
+
+
 }
