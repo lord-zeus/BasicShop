@@ -61,6 +61,7 @@ class OrderTest extends TestCase
         Product::factory(20)->create();
         Order::factory(20)->create();
         OrderProduct::factory(100)->create();
+        OrderProduct::factory()->orderId(1)->create();
         User::factory()->create();
         $response = $this->post('/api/v1/login', ['name'=> 'admin', 'password' => 'admin']);
         $data = $response->getOriginalContent();
